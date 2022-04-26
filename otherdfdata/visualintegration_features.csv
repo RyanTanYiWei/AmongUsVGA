@@ -1,0 +1,62 @@
+"","Group.1","Group.2","Group.3","Group.4","x"
+"1","surveillance","Admin Map","","",4.14214065
+"2","sabotage","Communications Disabled","","",3.07616157
+"3","emergency","Emergency Meeting","","",8.517913228125
+"4","sabotage","Fix Lights","","",3.21921285
+"5","sabotage","Oxygen Depletion [1]","","",3.6467807
+"6","sabotage","Oxygen Depletion [2]","","",4.09809375
+"7","sabotage","Reactor Meltdown [1]","","",2.4110165
+"8","sabotage","Reactor Meltdown [2]","","",2.4114492
+"9","surveillance","Security Camera","","",2.707993775
+"10","vents","vent@admin","","",3.0886385
+"11","vents","vent@cafeteria","","",6.5070009
+"12","vents","vent@electrical","","",2.3996091
+"13","vents","vent@hallway","","",3.8738177
+"14","vents","vent@lowerengine","","",3.365943
+"15","vents","vent@navigations [1]","","",2.6614277
+"16","vents","vent@navigations [2]","","",2.6587954
+"17","vents","vent@reactor [1]","","",3.20635545
+"18","vents","vent@reactor [2]","","",3.1958652
+"19","vents","vent@security [1]","","",3.9693475
+"20","vents","vent@security [2]","","",3.1553509
+"21","vents","vent@shields","","",3.2749052
+"22","vents","vent@upperengine","","",4.2857814
+"23","vents","vent@weapons [1]","","",5.1200805
+"24","vents","vent@weapons [2]","","",6.06270815
+"25","tasks","Fix Wiring [1]","Common","",3.714819
+"26","tasks","Fix Wiring [2]","Common","",5.80007265
+"27","tasks","Fix Wiring [3]","Common","",4.5769491
+"28","tasks","Fix Wiring [4]","Common","",3.4159894
+"29","tasks","Fix Wiring [5]","Common","",2.4049764
+"30","tasks","Swipe Card","Common","",4.11141375
+"31","tasks","Fuel Engines Part 1 and 3","Long","",3.86396425
+"32","tasks","Fuel Engines Part 2","Long","",3.12631905
+"33","tasks","Fuel Engines Part 4","Long","",2.7677534
+"34","tasks","Inspect Sample","Long","",3.915823375
+"35","tasks","Start Reactor","Long","",3.2325683
+"36","tasks","Accept Diverted Power Part 2 [1]","Short","",2.6564307
+"37","tasks","Accept Diverted Power Part 2 [2]","Short","",3.23141515
+"38","tasks","Accept Diverted Power Part 2 [3]","Short","",4.1733303
+"39","tasks","Accept Diverted Power Part 2 [4]","Short","",3.2184412
+"40","tasks","Accept Diverted Power Part 2 [5]","Short","",3.0284386
+"41","tasks","Accept Diverted Power Part 2 [6]","Short","",4.2059803
+"42","tasks","Accept Diverted Power Part 2 [7]","Short","",6.372040625
+"43","tasks","Accept Diverted Power Part 2 [8]","Short","",3.6413467
+"44","tasks","Align Engine Output (1/2) [1]","Short","",3.0683662
+"45","tasks","Align Engine Output (1/2) [2]","Short","",2.77089195
+"46","tasks","Callibrate Distributor","Short","",3.2366552
+"47","tasks","Chart Course","Short","",3.5681874
+"48","tasks","Clean O2 Filter","Short","",3.6403604
+"49","tasks","Divert Power Part 1","Short","",2.401324
+"50","tasks","Download Data Part 2","Short","",4.3285704
+"51","tasks","Stabilize Steering","Short","",3.67694815555556
+"52","tasks","Unlock Manifolds","Short","",3.19871875
+"53","tasks","Upload Data Part 1 [1]","Short","",2.92561245
+"54","tasks","Upload Data Part 1 [2]","Short","",3.1212752
+"55","tasks","Upload Data Part 1 [3]","Short","",6.1708956
+"56","tasks","Clear Asteroids","Long","Visual",6.46880275454545
+"57","tasks","Empty Chute Part 1","Long","Visual",3.63814315
+"58","tasks","Empty Garbage Part 1","Long","Visual",6.3720889
+"59","tasks","Empty Garbage/Chute Part 2","Long","Visual",6.0698338
+"60","tasks","Submit Scan","Long","Visual",3.934791975
+"61","tasks","Prime Shields","Short","Visual",3.2517328

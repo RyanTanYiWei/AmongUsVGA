@@ -1,0 +1,503 @@
+---
+title: "Among Us VGA"
+output: rmarkdown::github_document
+---
+
+
+Clear 
+```{r}
+rm(list = ls())
+```
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+#knitr::opts_chunk$set(include = FALSE, warning = FALSE)
+#install.packages("remotes")
+#Sys.setenv("R_REMOTES_NO_ERRORS_FROM_WARNINGS" = "true")
+#remotes::install_github("orange-vertex/rdepthmap")
+library(rdepthmap)
+library(rgeos)
+library(rgdal)
+library(maptools)
+library(devtools)
+library(dplyr)
+library(tidyverse)
+library(sjmisc)
+library(seqHMM) 
+library(ggplot2)
+library(spatstat)
+library(reshape2)
+library(networkD3)
+```
+
+# Process VGA Files
+
+Reading MIF Line Files
+```{r}
+map_w_furniture = readOGR("Maps_Analysis/1_With_Furniture.mif", verbose = FALSE)
+map_wo_furniture = readOGR("Maps_Analysis/2_Without_Furniture.mif", verbose = FALSE)
+#map_ac = readOGR("Maps_Analysis/3_ac.dxf", verbose = FALSE)
+#plot(map_w_furniture)
+#plot(map_wo_furniture)
+#plot(map_ac)
+```
+Make Grid on Depthmap and Conduct Basic VGA Processes
+```{r fig.width=8}
+#Map1
+rdepthmap::importLines(map_w_furniture, "Maps_Analysis/1_With_Furniture.graph")
+rdepthmap::createGrid("Maps_Analysis/1_With_Furniture.graph", gridSize = 700)
+rdepthmap::fillGrid("Maps_Analysis/1_With_Furniture.graph", fillX = -39506, fillY = -9412)
+rdepthmap::makeVGAGraph("Maps_Analysis/1_With_Furniture.graph")
+gallery_w_furniture = rdepthmap::getPointmapData("Maps_Analysis/1_With_Furniture.graph")$map
+#names(gallery_w_furniture)
+
+#Map2
+rdepthmap::importLines(map_wo_furniture, "Maps_Analysis/2_Without_Furniture.graph")
+rdepthmap::createGrid("Maps_Analysis/2_Without_Furniture.graph", gridSize = 700)
+rdepthmap::fillGrid("Maps_Analysis/2_Without_Furniture.graph", fillX = -39506, fillY = -9412)
+rdepthmap::makeVGAGraph("Maps_Analysis/2_Without_Furniture.graph")
+gallery_wo_furniture = rdepthmap::getPointmapData("Maps_Analysis/2_Without_Furniture.graph")$map
+#names(gallery_wo_furniture)
+
+#Map3
+#rdepthmap::importLines(map_ac, "Maps_Analysis/3_Accessibility.graph")
+#rdepthmap::createGrid("Maps_Analysis/3_Accessibility.graph", gridSize = 700)
+#rdepthmap::fillGrid("Maps_Analysis/3_Accessibility.graph", fillX = -53601, fillY = -9458)
+#rdepthmap::makeVGAGraph("Maps_Analysis/3_Accessibility.graph")
+gallery_ac = rdepthmap::getPointmapData("Maps_Analysis/3_Accessibility.graph")$map
+#names(gallery_ac)
+```
+Test Plot
+```{r}
+plot(gallery_w_furniture[, "Point.First.Moment"])
+plot(gallery_wo_furniture[, "Point.First.Moment"])
+plot(gallery_ac[, "Point.First.Moment"])
+```
+1) Process VGA Analysis : map with furniture
+```{r}
+rdepthmap::VGA("Maps_Analysis/1_With_Furniture.graph", vgaMode = "visibility-local", radii = c("2,3,4,5,6,7"))
+rdepthmap::VGA("Maps_Analysis/1_With_Furniture.graph", vgaMode = "visibility-global", radii = c("2"))
+rdepthmap::VGA("Maps_Analysis/1_With_Furniture.graph", vgaMode = "visibility-global", radii = c("3"))
+rdepthmap::VGA("Maps_Analysis/1_With_Furniture.graph", vgaMode = "visibility-global", radii = c("4"))
+rdepthmap::VGA("Maps_Analysis/1_With_Furniture.graph", vgaMode = "visibility-global", radii = c("5"))
+rdepthmap::VGA("Maps_Analysis/1_With_Furniture.graph", vgaMode = "visibility-global", radii = c("6"))
+rdepthmap::VGA("Maps_Analysis/1_With_Furniture.graph", vgaMode = "visibility-global", radii = c("7"))
+gallery_w_furniture = rdepthmap::getPointmapData("Maps_Analysis/1_With_Furniture.graph")$map
+#names(gallery_w_furniture)
+```
+2) Process VGA Analysis : map without furniture
+```{r}
+rdepthmap::VGA("Maps_Analysis/2_Without_Furniture.graph", vgaMode = "visibility-local", radii = c("2,3,4,5,6,7"))
+rdepthmap::VGA("Maps_Analysis/2_Without_Furniture.graph", vgaMode = "visibility-global", radii = c("2"))
+rdepthmap::VGA("Maps_Analysis/2_Without_Furniture.graph", vgaMode = "visibility-global", radii = c("3"))
+rdepthmap::VGA("Maps_Analysis/2_Without_Furniture.graph", vgaMode = "visibility-global", radii = c("4"))
+rdepthmap::VGA("Maps_Analysis/2_Without_Furniture.graph", vgaMode = "visibility-global", radii = c("5"))
+rdepthmap::VGA("Maps_Analysis/2_Without_Furniture.graph", vgaMode = "visibility-global", radii = c("6"))
+rdepthmap::VGA("Maps_Analysis/2_Without_Furniture.graph", vgaMode = "visibility-global", radii = c("7"))
+gallery_wo_furniture = rdepthmap::getPointmapData("Maps_Analysis/2_Without_Furniture.graph")$map
+#names(gallery_wo_furniture)
+```
+3) Process VGA Analysis : map for accessibility
+```{r}
+rdepthmap::VGA("Maps_Analysis/3_Accessibility.graph", vgaMode = "visibility-local", radii = c("2,3,4,5,6,7"))
+rdepthmap::VGA("Maps_Analysis/3_Accessibility.graph", vgaMode = "visibility-global", radii = c("2"))
+rdepthmap::VGA("Maps_Analysis/3_Accessibility.graph", vgaMode = "visibility-global", radii = c("3"))
+rdepthmap::VGA("Maps_Analysis/3_Accessibility.graph", vgaMode = "visibility-global", radii = c("4"))
+rdepthmap::VGA("Maps_Analysis/3_Accessibility.graph", vgaMode = "visibility-global", radii = c("5"))
+rdepthmap::VGA("Maps_Analysis/3_Accessibility.graph", vgaMode = "visibility-global", radii = c("6"))
+rdepthmap::VGA("Maps_Analysis/3_Accessibility.graph", vgaMode = "visibility-global", radii = c("7"))
+gallery_ac = rdepthmap::getPointmapData("Maps_Analysis/3_Accessibility.graph")$map
+#names(gallery_wo_furniture)
+```
+List of metrics
+```{r}
+names(gallery_w_furniture)
+```
+
+
+
+
+
+
+
+
+
+
+# Load Danger Maps Data 
+
+```{r message=FALSE, include=FALSE}
+values = data.frame(gallery_w_furniture)
+eth = readOGR("Maps_Ethnography/Ethnography.mif")
+```
+
+
+### Visualize Ethnography (Danger Map)
+```{r}
+eth.grid = as(eth,"SpatialPixelsDataFrame")
+plot(eth.grid[, "Verified8k"])
+plot(eth.grid[, "Verified9k"])
+```
+
+
+### Process Reddit Post with 8k Likes
+```{r}
+v_8k_df = data.frame(values)
+v_8k_df$risk = eth$Verified8k
+#write_csv(v_8k_df,"ouputdata/Verification8k.csv")
+
+rsq_8k_df = purrr::map(v_8k_df[,-1],  ~lm(risk ~ .x, data = v_8k_df)) %>%
+  purrr::map(broom::glance) %>%
+  dplyr::bind_rows(.id = "variable") %>%
+  dplyr::select(variable, r.squared)
+#rsq_8k_df
+
+f_rsq_8k_df  = rsq_8k_df %>% 
+  .[-c(46, 47, 48, 49,50), ] %>% 
+  arrange(desc(r.squared))
+```
+### Process Reddit Post with 9k Likes
+```{r}
+v_9k_df = data.frame(values)
+v_9k_df$risk = eth$Verified9k
+#write_csv(v_9k_df,"ouputdata/Verification9k.csv")
+
+rsq_9k_df = purrr::map(v_9k_df[,-1],  ~lm(risk ~ .x, data = v_9k_df)) %>%
+  purrr::map(broom::glance) %>%
+  dplyr::bind_rows(.id = "variable") %>%
+  dplyr::select(variable, r.squared)
+#rsq_9k_df
+
+f_rsq_9k_df  = rsq_9k_df %>% 
+  .[-c(46, 47, 48, 49,50), ] %>% 
+  arrange(desc(r.squared))
+```
+
+
+
+
+## Compare R.Squared Values
+```{r}
+p_8k <- ggplot(data=f_rsq_8k_df, aes(x=variable, y=r.squared)) +
+  geom_bar(stat="identity")
+p_8k + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+p_9k <- ggplot(data=f_rsq_9k_df, aes(x=variable, y=r.squared)) +
+  geom_bar(stat="identity")
+p_9k + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+## Scatter different Visual Metrics
+```{r warning=FALSE}
+#ggplot(v_8k_df, aes(x=v_8k_df$risk, y=v_8k_df$Visual.Node.Count.R3)) + geom_point()
+ggplot(v_8k_df, aes(x=v_8k_df$risk, y=v_8k_df$Visual.Relativised.Entropy.R6)) + geom_point(shape=1,size=5) 
+```
+## Visualize Actual on Map
+```{r} 
+#plot(gallery_w_furniture[, "Visual.Node.Count.R3"])
+plot(gallery_w_furniture[, "Visual.Relativised.Entropy.R6"])
+plot(gallery_w_furniture[, "Visual.Integration..P.value..R7"])
+eth.grid = as(eth,"SpatialPixelsDataFrame")
+plot(eth.grid[, "Verified8k"])
+plot(eth.grid[, "Verified9k"])
+```
+
+# Load Kill Map Data
+
+## Find Point Deaths
+```{r warning=FALSE}
+#Visualize Points
+pd = readOGR("Maps_Ethnography/Deaths.mif")
+plot(gallery_w_furniture[, "Visual.Integration..Tekl..R7"])
+plot(pd, add = TRUE, col = "red")
+```
+Kernel Density Graph at 2500 RADIUS
+```{r echo=TRUE}
+ma = as(eth.grid[, "Verified8k"],"owin")
+pp = as(pd,"ppp")
+marks(pp) = NULL
+Window(pp) = ma
+K <- density(pp,sigma = 3000)  #more is more spread
+plot(K, main=NULL, las=1)
+contour(K, add=TRUE)
+```
+Convert Kernel Density Graph into SPDF to Visualize
+```{r}
+d = eth
+d1 = cbind(d,K)
+d1$x <- NULL
+d1$y <- NULL
+d1$optional <- NULL
+d.grid = as(d1,"SpatialPixelsDataFrame")
+plot(d.grid[, "value"])
+
+pd = readOGR("Maps_Ethnography/Deaths.mif")
+plot(pd, add = TRUE, col = "red")
+```
+Testing R Correlation
+```{r}
+v_0k_df = data.frame(values)
+v_0k_df$risk = d1$value
+
+rsq_0k_df = purrr::map(v_0k_df[,-1],  ~lm(risk ~ .x, data = v_0k_df)) %>%
+  purrr::map(broom::glance) %>%
+  dplyr::bind_rows(.id = "variable") %>%
+  dplyr::select(variable, r.squared)
+#rsq_0k_df
+
+f_rsq_0k_df  = rsq_0k_df %>% 
+  .[-c(46, 47, 48, 49,50), ] %>% 
+  arrange(desc(r.squared))
+
+
+p_0k <- ggplot(data=f_rsq_0k_df, aes(x=variable, y=r.squared)) +
+  geom_bar(stat="identity")
+p_0k + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+## Using QGIS manipulated map
+```{r}
+#Visualize Heatmap Diagram
+death = readOGR("Maps_Ethnography/Ethnography_2.mif")
+death.grid = as(death,"SpatialPixelsDataFrame")
+plot(death.grid[, "one"])
+plot(death.grid[, "onehalf"])
+plot(death.grid[, "two"])
+plot(death.grid[, "twohalf"])
+```
+Check Distribution of Values (TOTAL 3000 points)
+```{r include=FALSE}
+library(purrr)
+one = data.frame(death$one) %>% arrange(death.one) %>% filter(death.one>0) %>% mutate(col = row_number()) %>% .[c(2,1)]
+onehalf = data.frame(death$onehalf) %>% arrange(death.onehalf) %>% filter(death.onehalf>0) %>% mutate(col = row_number()) %>% .[c(2,1)]
+two = data.frame(death$two) %>% arrange(death.two) %>% filter(death.two>0) %>% mutate(col = row_number()) %>% .[c(2,1)]
+twohalf = data.frame(death$twohalf) %>% arrange(death.twohalf) %>% filter(death.twohalf>0) %>% mutate(col = row_number()) %>% .[c(2,1)]
+plot(one)
+plot(onehalf)
+plot(two)
+plot(twohalf)
+```
+Correlation Test
+```{r warning=FALSE, include=FALSE}
+#one----------------------------------------------
+v_1k_df = data.frame(values)
+v_1k_df$risk = death$one
+#write_csv(v_1k_df,"ouputdata/Verification1k.csv")
+
+rsq_1k_df = purrr::map(v_1k_df[,-1],  ~lm(risk ~ .x, data = v_1k_df)) %>%
+  purrr::map(broom::glance) %>%
+  dplyr::bind_rows(.id = "variable") %>%
+  dplyr::select(variable, r.squared)
+#rsq_1k_df
+
+f_rsq_1k_df  = rsq_1k_df %>% 
+  .[-c(46, 47, 48, 49,50), ] %>% 
+  arrange(desc(r.squared))
+
+#onehalf----------------------------------------------
+
+v_1_5k_df = data.frame(values)
+v_1_5k_df$risk = death$onehalf
+#write_csv(v_1_5k_df,"ouputdata/Verification1_5k.csv")
+
+rsq_1_5k_df = purrr::map(v_1_5k_df[,-1],  ~lm(risk ~ .x, data = v_1_5k_df)) %>%
+  purrr::map(broom::glance) %>%
+  dplyr::bind_rows(.id = "variable") %>%
+  dplyr::select(variable, r.squared)
+#rsq_1_5k_df
+
+f_rsq_1_5k_df  = rsq_1_5k_df %>% 
+  .[-c(46, 47, 48, 49,50), ] %>% 
+  arrange(desc(r.squared))
+
+#two----------------------------------------------
+
+v_2k_df = data.frame(values)
+v_2k_df$risk = death$two
+#write_csv(v_2k_df,"ouputdata/Verification2k.csv")
+
+rsq_2k_df = purrr::map(v_2k_df[,-1],  ~lm(risk ~ .x, data = v_2k_df)) %>%
+  purrr::map(broom::glance) %>%
+  dplyr::bind_rows(.id = "variable") %>%
+  dplyr::select(variable, r.squared)
+#rsq_2k_df
+
+f_rsq_2k_df  = rsq_2k_df %>% 
+  .[-c(46, 47, 48, 49,50), ] %>% 
+  arrange(desc(r.squared))
+
+#twohalf----------------------------------------------
+
+v_2_5k_df = data.frame(values)
+v_2_5k_df$risk = death$twohalf
+#write_csv(v_2_5k_df,"ouputdata/Verification2_5k.csv")
+
+rsq_2_5k_df = purrr::map(v_2_5k_df[,-1],  ~lm(risk ~ .x, data = v_2_5k_df)) %>%
+  purrr::map(broom::glance) %>%
+  dplyr::bind_rows(.id = "variable") %>%
+  dplyr::select(variable, r.squared)
+#rsq_2_5k_df
+
+f_rsq_2_5k_df  = rsq_2_5k_df %>% 
+  .[-c(46, 47, 48, 49,50), ] %>% 
+  arrange(desc(r.squared))
+
+```
+
+## Correlation Based on Heatmap
+```{r}
+p_1k <- ggplot(data=f_rsq_1k_df, aes(x=variable, y=r.squared)) +
+  geom_bar(stat="identity")
+p_1k + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+p_1_5k <- ggplot(data=f_rsq_1_5k_df, aes(x=variable, y=r.squared)) +
+  geom_bar(stat="identity")
+p_1_5k + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+p_2k <- ggplot(data=f_rsq_2k_df, aes(x=variable, y=r.squared)) +
+  geom_bar(stat="identity")
+p_2k + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+p_2_5k <- ggplot(data=f_rsq_2_5k_df, aes(x=variable, y=r.squared)) +
+  geom_bar(stat="identity")
+p_2_5k + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+
+## Distribution of Data Points based on Visual Metrics
+```{r, fig.width = 15, fig.asp = .62}
+overlapsPD = over(pd,gallery_w_furniture)
+overlapsPD.a <- scale(overlapsPD[,2:46],center=T,scale=T)
+overlapsPD.b = as.data.frame(overlapsPD.a)
+overlapsPD.b$Ref =overlapsPD$Ref
+DAT.melt = melt(overlapsPD.b,id=c("Ref"))
+ggplot(DAT.melt, aes(x=variable,y=value) ) + geom_point(shape=1,size=4)  + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+
+# General Map Visibility
+
+## Compare visibility radius 2-7
+
+### 1. map with furniture
+```{r}
+plot(gallery_w_furniture[, "Visual.Integration..HH..R2"])
+plot(gallery_w_furniture[, "Visual.Integration..HH..R3"])
+plot(gallery_w_furniture[, "Visual.Integration..HH..R7"])
+```
+### 2. map without furniture
+```{r}
+plot(gallery_wo_furniture[, "Visual.Integration..HH..R2"])
+plot(gallery_wo_furniture[, "Visual.Integration..HH..R3"])
+plot(gallery_wo_furniture[, "Visual.Integration..HH..R7"])
+```
+### 3. map accessibility
+```{r}
+plot(gallery_ac[, "Visual.Integration..HH..R2"])
+plot(gallery_ac[, "Visual.Integration..HH..R3"])
+plot(gallery_ac[, "Visual.Integration..HH..R7"])
+```
+
+
+### Compare with and without furniture
+
+#### Visual Integration R7
+```{r}
+plot(gallery_w_furniture[, "Visual.Integration..HH..R7"])
+plot(gallery_wo_furniture[, "Visual.Integration..HH..R7"])
+```
+#### Visual Entropy, R6
+```{r}
+plot(gallery_w_furniture[, "Visual.Relativised.Entropy.R6"])
+plot(gallery_wo_furniture[, "Visual.Relativised.Entropy.R6"])
+```
+
+
+
+
+
+
+
+# Feature Visibility
+
+## Visualizing Feature Spaces
+```{r, fig.width=8}
+#names(gallery_w_furniture)
+
+feature_layer = readOGR("Maps_Analysis/Feature_Polygon2.mif", verbose = FALSE)
+plot(gallery_w_furniture[, "Visual.Integration..HH..R7"])
+plot(feature_layer, add = TRUE, col = "red")
+```
+## Complete Feature List
+```{r}
+overlapsDF = over(gallery_w_furniture[, "Visual.Integration..HH..R7"], feature_layer)
+visi_df = aggregate(gallery_w_furniture$Visual.Integration..HH..R7, by = list(overlapsDF$Layer,overlapsDF$Text,overlapsDF$LengthTask,overlapsDF$VisualTask), mean, areaWeighted = TRUE)
+vif = visi_df %>% arrange(Group.4)
+write.csv(vif,"ouputdata/visualintegration_features.csv")
+```
+
+
+
+
+## Comparisons by Averaging
+
+@Types_of_Task
+```{r message=FALSE}
+visi_df %>%
+        	group_by(Group.1) %>%
+        	summarise(V_r7 = mean(x))
+```
+@Length_of_Task
+```{r message=FALSE}
+visi_df %>%
+          filter(Group.1 == "tasks" | Group.1 == "hotpink" | Group.1 == "lightpink") %>%
+        	group_by(Group.3) %>%
+        	summarise(V_r7 = mean(x))
+```
+@Visual_Type_of_Task
+```{r message=FALSE}
+visi_df %>%
+          filter(Group.1 == "tasks" | Group.1 == "hotpink" | Group.1 == "lightpink") %>% 
+        	group_by(Group.4) %>%
+        	summarise(V_r7 = mean(x))
+```
+
+Plot of Visibility for Each Tasks
+```{r}
+task_all_df = visi_df %>% filter(Group.1 == "tasks") %>% .[c(3,5)] 
+task_time_df = visi_df %>% filter(Group.1 == "tasks") %>% .[c(3,5)]
+task_visual_df = visi_df %>% filter(Group.1 == "tasks") %>% .[c(4,5)]
+
+task_all_df$Group.3 = "All"
+taskall = melt(task_all_df,id=c("Group.3"))
+tasklength = melt(task_time_df,id=c("Group.3"))
+taskvisual = melt(task_visual_df,id=c("Group.4")) %>% filter(Group.4 == 'Visual')
+names(taskvisual)[1] <- "Group.3"
+
+task_df = rbind(taskall,tasklength,taskvisual)
+ggplot(task_df, aes(x=Group.3,y=value, color = Group.3) ) + geom_boxplot(shape=2,size=1)  + theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=0.5)) + labs(x="")
+```
+
+
+
+
+
+
+
+## Feature Tables
+@Types_of_Task
+```{r}
+visi_df %>% filter(Group.1 == "tasks")
+visi_df %>% filter(Group.1 == "sabotage")
+visi_df %>% filter(Group.1 == "surveillance")
+visi_df %>% filter(Group.1 == "vents")
+```
+@Length_of_Task
+```{r}
+visi_df %>% filter(Group.3 == "Long") %>% select(-one_of(c("Group.1","Group.2")))
+visi_df %>% filter(Group.3 == "Common") %>% select(-one_of(c("Group.1","Group.2")))
+visi_df %>% filter(Group.3 == "Short") %>% select(-one_of(c("Group.1","Group.2")))
+```
+@Visual_Type_of_Task
+```{r}
+visi_df %>% filter(Group.4 == "Visual") %>% select(-one_of(c("Group.1")))
+visi_df %>% filter(Group.1 == "tasks" | Group.1 == "hotpink" | Group.1 == "lightpink") %>% filter(Group.4 != "Visual") %>% select(-one_of(c("Group.1")))
+```
